@@ -8,25 +8,19 @@ node {
         env.CI = 'true' // set environment CI
 
         stage('Build') { // mendefinisikan sebuah tahapan yang disebut Build yang muncul di Jenkins UI
-            steps {
-                sh 'npm install' // mengeksekusi perintah npm untuk memastikan bahwa semua dependencies yang diperlukan untuk menjalankan React App telah diunduh ke direktori node_modules
-            }
+            sh 'npm install' // mengeksekusi perintah npm untuk memastikan bahwa semua dependencies yang diperlukan untuk menjalankan React App telah diunduh ke direktori node_modules
         }
 
         stage('Test') {// mendefinisikan stage yang disebut Test yang muncul di Jenkins UI
-            steps {
-                sh './jenkins/scripts/test.sh' // menjalankan shell script bernama test.sh yang berlokasi di direktori jenkins/scripts dari root pada react-app repository
-            }
+            sh './jenkins/scripts/test.sh' // menjalankan shell script bernama test.sh yang berlokasi di direktori jenkins/scripts dari root pada react-app repository
         }
 
         stage('Deliver') {
-            steps {
-                sh './jenkins/scripts/deliver.sh'
+            sh './jenkins/scripts/deliver.sh'
 
-                input message: 'Finished using the website? (Click "Proceed" to continue)'
+            input message: 'Finished using the website? (Click "Proceed" to continue)'
                 
-                sh './jenkins/scripts/kill.sh'
-            }
+            sh './jenkins/scripts/kill.sh'
         }
     } // end of dockerImg
 }
