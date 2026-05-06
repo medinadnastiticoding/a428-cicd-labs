@@ -1,0 +1,34 @@
+// Scripted Pipeline,
+// 26-05-06: trying to add more stages like ideal CI CD pipeline supposed to
+
+node {
+    // mengunduh Docker image bernama node:16-buster-slim dan menjalankan image sebagai container terpisah
+    def dockerImg = docker.image('node:lts-buster-slim')
+    
+    // membuat Node container dapat diakses sementara melalui port 3000
+    dockerImg.inside('-p 3000:3000') {
+        env.CI = 'true' // set environment CI
+
+        stage('Build') { // mendefinisikan sebuah tahapan yang disebut Build yang muncul di Jenkins UI
+            steps {
+                sh 'npm install' // mengeksekusi perintah npm untuk memastikan bahwa semua dependencies yang diperlukan untuk menjalankan React App telah diunduh ke direktori node_modules
+            }
+        }
+
+        stage('Test') {// mendefinisikan stage yang disebut Test yang muncul di Jenkins UI
+            steps {
+                sh './jenkins_v2/scripts/test.sh' // menjalankan shell script bernama test.sh yang berlokasi di direktori jenkins/scripts dari root pada react-app repository
+            }
+        }
+
+        stage('Deliver') {
+            steps {
+                sh './jenkins_v2/scripts/deliver.sh'
+
+                input message: 'Finished using the website? (Click "Proceed" to continue)'
+                
+                sh './jenkins_v2/scripts/kill.sh'
+            }
+        }
+    } // end of dockerImg
+}
